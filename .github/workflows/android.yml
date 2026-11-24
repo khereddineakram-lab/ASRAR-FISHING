@@ -1,0 +1,35 @@
+
+name: Build ASRAR FISHING APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract project
+        run: |
+          unzip ASRAR_FISHING_GitHub_Build_Kit.zip -d extracted
+          find extracted -name settings.gradle -o -name settings.gradle.kts
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build APK
+        run: |
+          cd extracted/asrar
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ASRAR-FISHING-APK
+          path: extracted/asrar/app/build/outputs/apk/debug/*.apk
